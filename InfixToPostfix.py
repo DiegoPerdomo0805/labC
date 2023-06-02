@@ -107,6 +107,8 @@ def trans3(lst):
         i -= 1
     return lst
 
+
+# ESTA ES LA 
 def trans4(exp):
     i = len(exp) - 1
     while i >= 0:
@@ -125,10 +127,10 @@ def trans4(exp):
                 while exp[j] != '(':
                     j -= 1
                 exp2 = exp[j:i]
-                exp = exp[:j] + ['(', exp2, '|ε', ')'] + exp[i+1:]
+                exp = exp[:j] + ['(', exp2, '|', 'ε', ')'] + exp[i+1:]
                 i = j+1
             else:
-                exp = exp[:i-1] + ['(', exp[i-1], '|ε', ')'] + exp[i+1:]
+                exp = exp[:i-1] + ['(', exp[i-1], '|', 'ε', ')'] + exp[i+1:]
         elif exp[i] == '+':
             if exp[i-1] == ')':
                 j = i
@@ -472,24 +474,25 @@ def readExp_2(exp):
 #Basado en el algortimo de Shunting-yard
 def InfixToPostfix(exp):
     if parenthesis_check(exp) and symbol_check_2(exp):
-        print('La expresion regular es válida: ', ' '.join(exp))
+        #print('La expresion regular es válida: ', ' '.join(exp))
+        print('La expresion regular es válida')
         #exp = trans(exp)
 
         #exp = readExp(exp)
         if isinstance(exp, list):
             #print(exp)
             exp = trans4(exp)
-            print('Vecna the whispered one')
+            #print('Vecna the whispered one')
             #print(type(exp))
             exp = flatten(exp)
-            print('Gruumsh the destroyer')
+            #print('Gruumsh the destroyer')
             print(' '.join(str(e) for e in exp))
-            print('Tiamat the ancient one')
+            #print('Tiamat the ancient one')
             exp = readExp_2(exp)
             #exp = readExp_3(exp)
             #print(exp)
             #print(' '.join(str(e) for e in exp))
-            print('Bahamut the golden')
+            #print('Bahamut the golden')
 
         else:
             exp = trans(exp)

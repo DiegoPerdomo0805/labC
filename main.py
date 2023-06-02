@@ -3,9 +3,10 @@
 from yalex import grammar, generate_alphabet, parser
 from InfixToPostfix import *
 from BinaryTree import *
+import time
 
 files = [
-    './tests/slr-1.yal',
+    #'./tests/slr-1.yal',
     './tests/slr-2.yal',
     './tests/slr-3.yal',
     './tests/slr-4.yal'
@@ -20,7 +21,6 @@ def main(file):
     l, r = grammar(file)
     sigma, regex = generate_alphabet(l, r)
 
-    print('\n')
     print('Vex\'ahlia Vessar')
     print('-------------------------------------------------------------')
 
@@ -28,7 +28,6 @@ def main(file):
     for e in l:
         print(e, ' = ', l[e])
 
-    print('\n')
     print('Cassandra de Rolo')
     print('-------------------------------------------------------------')
 
@@ -42,7 +41,7 @@ def main(file):
     print('Alfabeto: ', sigma)
     print('Expresion regular: ', regex)
 
-    print('\n-------------------------------------------------------------')
+    print('-------------------------------------------------------------')
 
 
     r, sigma = parser(regex, l, sigma)
@@ -51,8 +50,6 @@ def main(file):
 
     #print('Array regex: ', r)
     print('Expresion regular: ', r_string)
-    print('\nAlfabeto: ', sigma)
-
     print('Keyleth')
     print('--------------------------------------------------------.-----')
 
@@ -60,10 +57,9 @@ def main(file):
 
     tratemos = InfixToPostfix(r)
 
-    print('Expresion regular postfija: ', ' '.join(tratemos))
+    print('Expresion regular postfija: ', ''.join(tratemos))
 
     print('-'*60)
-    print('Grog Strongjaw')
 
     
 
@@ -73,11 +69,18 @@ def main(file):
     tree = buildTree(tratemos.pop(), tratemos)
 
     visual_tree = tree.generate_graph()
-    #tree.traversePostOrder()
+    tree.traversePostOrder()
+    #tree.post2()
     #tree.determineFollowPos()
+    #tree.post3()
+    print('-------------------------------------------------------------')
 
     visual_tree.render(file, view=True, format='png', cleanup=True, directory='./visual/', quiet=True)
 
 for i in range(len(files)):
     print('Prueba ', i+1)
     main(files[i])
+    # make the program wait for some seconds
+    time.sleep(3)
+
+#main(files[2])

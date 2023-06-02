@@ -58,14 +58,18 @@ class Node:
     def determineFollowPos(self):
         if self.left:
             self.left.determineFollowPos()
+            #print(self.left.val, self.left.follow_pos)
         if self.right:
             self.right.determineFollowPos()
+            #print(self.right.val, self.right.follow_pos)
         if self.val == "'.'":
             for i in self.left.last_pos:
                 self.searchPos(i).follow_pos += self.right.first_pos
+                #print( 'i: ', i, 'follow_pos: ', self.right.first_pos)
         elif self.val == '*':
             for i in self.last_pos:
                 self.searchPos(i).follow_pos += self.first_pos
+                #print( 'i: ', i, 'follow_pos: ', self.first_pos)
 
     def findi(self, i):
         if self.left:
