@@ -324,47 +324,176 @@ def generate_alphabet(l, r):
     return alphabet, regex
 
 
+import re 
+
+def separator(exp):
+    pattern = "|".join(re.escape(operator) for operator in operators)
+    separated_string = re.split(f"({pattern})", exp)
+    separated_string = [s for s in separated_string if s]  # Remove empty elements
+    return separated_string
+
+def replace_with_separated_elements(array):
+    updated_array = []
+    for element in array:
+        if any(operator in element for operator in operators):
+            separated_elements = separator(element)
+            updated_array.extend(separated_elements)
+        else:
+            updated_array.append(element)
+    return updated_array
+
+def merge_elements(array, start_index, end_index, merged_element):
+    merged_array = array[:start_index] + [merged_element] + array[end_index + 1:]
+    return merged_array
+
+
+def uniteTokens(array):
+    flag = False
+    temps = []
+    temp = ""
+    pos_is = []
+    pos_fs = []
+    for i in range(len(array)):
+        #print('  *  ',array[i])
+        if array[i] == "'" and not flag:
+        #    print('here1')
+            flag = True
+            pos_is.append(i)
+            temp += array[i]
+        elif array[i] == "'" and flag:
+       #     print('here2')
+            flag = False
+            pos_fs.append(i)
+            temp += array[i]
+            temps.append(temp)
+      #      print('temp: ', temp)
+            temp = ""
+        elif flag:
+     #       print('here3')
+            temp += array[i]
+    #print('temp: ', temp)
+    #print('temps: ', temps)
+    #print('pos_is: ', pos_is)
+    #print('pos_fs: ', pos_fs)
+    for i in range(len(pos_is)):
+        #print('  *  ', pos_is[i], pos_fs[i], temps[i])
+        array = merge_elements(array, pos_is[i], pos_fs[i], temps[i])
+        #for e in array:
+            #print('  *//  ', e)
+    return array
+    
+            
+
+
+
+def orArray(array):
+    temp = ""
+    temp += "("
+    for e in array:
+        temp += str(e)
+        if e != array[-1]:
+            temp += "|"
+    temp += ")"
+    return temp
+
+def ElementofArrayinArray(array, array2):
+    #print(' GUUUUUUTS', array2)
+    for e in array:
+        #print(' + e: ', e)
+        if e in array2:
+            #print(' GRIFFIIIITH')
+            return True
+    return False
+
+
+
+# Traducir un elemento defindo en lets a su valor en sigma
+# Existen algunos casos en donde su valor es otro elemento de lets
+# por lo que se debe de traducir recursivamente
+def translate(l, lets):
+    r = lets[l]
+    for e in lets:
+        if e in r:
+            #print('Vamos aqui: ', e, r)
+            temp_r = separator(r)
+            #print('temp_r: ', temp_r)
+            for i in range(len(temp_r)):
+                if temp_r[i] in lets:
+                    temp_r[i] = translate(temp_r[i], lets)
+            #print('temp_r: ', temp_r)
+            r = temp_r
+    if not isinstance(r, str) and not ElementofArrayinArray(r, operators):
+        r = orArray(r)
+    #print(' - r: ', r)
+    return r
+
+
+
 # traducir el regex a partir de las reglas ya definidas
 def parser(regexStack, lets, sigma):
+    print('Stack String: ', ''.join(regexStack))
     regex = ""
     regex2 = []
+    print('-'*100)
+
     
     for val in regexStack:
-        if val in lets:
-            regex += "("
-            regex2.append("(")
-
-            for x in range(len(lets[val])):
-                if (len(regex) > 0 and 
-                    regex[-1] != "(" and 
-                    regex[-1] != ")" and 
-                    lets[val][x] != "(" and
-                    lets[val][x] != ")"):
-
-                    regex = regex + "|"
-                    regex2.append("|")
-
-                if isinstance(lets[val][x], int):
-                    regex += "'" + str(lets[val][x]) + "'"
-                    regex2.append(lets[val][x])
-                else:
-                    regex += lets[val][x]
-                    regex2.append(lets[val][x])
-
-
-                    if (lets[val][x] not in sigma and
-                        lets[val][x] != "(" and
-                        lets[val][x] != ")" and
-                        lets[val][x] not in operators):
-
-                        sigma.append(lets[val][x])
-
-            regex += ")"
-            regex2.append(")")
-            
-        else:
-            regex += val
+        #print("val: ", val)
+        if val not in lets:
             val = val.strip("'")
+            regex += val
             regex2.append(val)
+        else:
+            #print("val: ", val)
+            #print("lets[val]: ", lets[val])
+            regex += lets[val]
+            regex2.append(lets[val])
+    
+    
+    print("regex: ", regex2)
+    
+    print('-'*100)
+
+    # diferenciación entre tokens y operadores
+    for i in range(len(regex2)):
+        if regex2[i] in sigma and regex2[i] in operators:
+            regex2[i] = "'" + str(regex2[i]) + "'"
+        
+    
+
+    regex2 = replace_with_separated_elements(regex2)
+    regex2 = uniteTokens(regex2)
+
+    # Update sigma
+    for e in regex2:
+        if e not in sigma and e not in operators and e not in lets:
+            if type(e) == str and e.isdigit():
+                int_e = int(e)
+                if int_e not in sigma:
+                    sigma.append(int_e)
+            else:    
+                sigma.append(e)
+
+    print("regexStack: ", regex2)
+
+    for e in regex2:
+        if e in lets:
+            #print("e: ", e, ' - ', lets[e], ' - ', translate(e, lets))
+            replacement = ''.join(translate(e, lets))
+            #print("replacement: ", e, ' - ', replacement)
+            
+            #print("regex: ", regex)
+            index = regex2.index(e)
+            regex2[index] = replacement
+            regex2 = replace_with_separated_elements(regex2)
+            #print("regex: ", ''.join(regex2))
+
+    regex2 = uniteTokens(regex2)
+
+
+        #print("val: ", val)
+    print('-'*100)
+
+    print("Regex: ", regex)
     
     return regex2, sigma

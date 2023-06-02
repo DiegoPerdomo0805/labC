@@ -4,10 +4,10 @@ from BinaryTree import buildTree, ArrayInArray
 # Métodos de transfroemación infix a postfix utilizando shunting yard
 
 exp = []
-operators = ['*', '|', '.', '(', ')']
+operators = ['*', '|', "'.'", '(', ')']
 # extra operators: ?, +
 
-ops = {'*': 3, '.': 2, '|': 1}
+ops = {'*': 3, "'.'": 2, '|': 1}
 
 def flatten(arr):
     result = []
@@ -111,6 +111,7 @@ def trans4(exp):
     i = len(exp) - 1
     while i >= 0:
         temp = exp[i]
+        #print(' + temp: ', temp)
         if exp[i] == '*':
             if exp[i-1] == '*':
                 j = i 
@@ -297,38 +298,85 @@ def symbol_check(exp):
     #symbols = ['*', '|', '(', ')']
     for i in range(len(exp)):
         e = exp[i]
+        print(e)
         if e == '*':
             if i == 0 or exp[i-1] == '|' or exp[i-1] == '(':
+                print('here1')
                 flag = False
         elif e == '|':
             if i == 0 or exp[i-1] == '|' or exp[i-1] == '(' or i == len(exp)-1:
+                print('here2')
                 flag = False
             else:
                 if exp[i+1] == '|' or exp[i+1] == ')' or exp[i+1] == '*' or exp[i+1] == '.' or exp[i+1] == '+' or exp[i+1] == '?':
                     flag = False
         elif e == '.':
             if i == 0 or exp[i-1] == '|' or exp[i-1] == '(' or i == len(exp)-1:
+                print('here3')
                 flag = False
             else:
                 if exp[i+1] == '|' or exp[i+1] == ')' or exp[i+1] == '*' or exp[i+1] == '.' or exp[i+1] == '+' or exp[i+1] == '?':
+                    print('here4')
                     flag = False
         elif e == '(':
             if i == len(exp)-1:
+                print('here5')
                 flag = False
             else:
                 if exp[i+1] == '|' or exp[i+1] == ')' or exp[i+1] == '*' or exp[i+1] == '.' or exp[i+1] == '+' or exp[i+1] == '?':
+                    print('here6')
                     flag = False
         elif e == '+':
             if i == 0 or exp[i-1] == '|' or exp[i-1] == '(':
+                print('here7')
                 flag = False
         elif e == '?':
             if i == 0 or exp[i-1] == '|' or exp[i-1] == '(':
+                print('here8')
                 flag = False
 
         
     return flag
                 
     
+#  Esta versión del método supone la inexistencia de operadores de concatenación en la expresión regular
+def symbol_check_2(exp):
+    flag = True
+    
+    #symbols = ['*', '|', '(', ')']
+    for i in range(len(exp)):
+        e = exp[i]
+        #print(e)
+        if e == '*':
+            if i == 0 or exp[i-1] == '|' or exp[i-1] == '(':
+                print('here1')
+                flag = False
+        elif e == '|':
+            if i == 0 or exp[i-1] == '|' or exp[i-1] == '(' or i == len(exp)-1:
+                print('here2')
+                flag = False
+            else:
+                if exp[i+1] == '|' or exp[i+1] == ')' or exp[i+1] == '*' or exp[i+1] == '+' or exp[i+1] == '?':
+                    flag = False
+        elif e == '(':
+            if i == len(exp)-1:
+                print('here5')
+                flag = False
+            else:
+                if exp[i+1] == '|' or exp[i+1] == ')' or exp[i+1] == '*' or exp[i+1] == '+' or exp[i+1] == '?':
+                    print('here6')
+                    flag = False
+        elif e == '+':
+            if i == 0 or exp[i-1] == '|' or exp[i-1] == '(':
+                print('here7')
+                flag = False
+        elif e == '?':
+            if i == 0 or exp[i-1] == '|' or exp[i-1] == '(':
+                print('here8')
+                flag = False
+
+        
+    return flag
 
 
 #Función necesaria para leer la expresión regular y agregar los operadores de concatenación
@@ -381,54 +429,58 @@ def readExp_2(exp):
             abc.append(e)
     size = len(infix)
     kleene = False
-    waiting  = 0
-    print('Xanathar, the beholder\n')
-    while size > 0:        
+    waiting = 0
+    #print('Xanathar, the beholder\n')
+    while size > 0:
         if size > 1:
-            v1 = infix[size-1]
-            v2 = infix[size-2]
+            v1 = infix[size - 1]
+            v2 = infix[size - 2]
             if kleene:
                 if waiting > 0:
                     waiting -= 1
-                    kleene = False                    
+                    kleene = False
                     waiting = 0
             elif v1 == '*' and not kleene:
                 kleene = True
                 waiting = 1
-            if (v1 == '(' and v2 in abc and not kleene) or (v1 in abc and v2 == ')' and not kleene) or (v1 in abc and v2 in abc and not kleene) or (v1 == '(' and v2 == ')' and not kleene):
+            if (
+                (v1 == '(' and v2 in abc and not kleene) or
+                (v1 in abc and v2 == ')' and not kleene) or
+                (v1 in abc and v2 in abc and not kleene) or
+                (v1 == '(' and v2 == ')' and not kleene)
+            ):
                 exp3 = exp2.copy()
-                print(exp3.pop())
-                exp2.insert(0, '.')
                 exp2.insert(0, v1)
+                exp2.insert(0, "'.'")
             else:
                 if v1 in abc and v2 == '*' and not kleene:
-                    exp2.insert(0, '.')
+                    exp2.insert(0, "'.'")
                 exp2.insert(0, v1)
             size -= 1
         else:
-            v1 = infix[size-1]
+            v1 = infix[size - 1]
             exp2.insert(0, v1)
             size -= 1
-    print('\nArkhan the cruel')
-    #print('\n', exp)
-    #print('\n', exp2)
-    print('\n',' '.join(str(e) for e in exp2))
+    #print('\nArkhan the cruel')
+    #print('\n', ' '.join(str(e) for e in exp2))
     return exp2
+
 
 
 
 
 #Basado en el algortimo de Shunting-yard
 def InfixToPostfix(exp):
-    if parenthesis_check(exp) and symbol_check(exp):
+    if parenthesis_check(exp) and symbol_check_2(exp):
         print('La expresion regular es válida: ', ' '.join(exp))
         #exp = trans(exp)
 
         #exp = readExp(exp)
         if isinstance(exp, list):
+            #print(exp)
             exp = trans4(exp)
             print('Vecna the whispered one')
-            print(type(exp))
+            #print(type(exp))
             exp = flatten(exp)
             print('Gruumsh the destroyer')
             print(' '.join(str(e) for e in exp))
@@ -449,12 +501,17 @@ def InfixToPostfix(exp):
         postfix = []
         for e in exp:
             #If the input symbol is a letter… append it directly to the output queue
+            #print('postfix: ', postfix)
+            #print('OpStack: ', OpStack)
+            #print('e: ', e)
+            #print('-------------------')
             if e not in operators:
                 postfix.append(e)
             else:
                 if e == '(':
                     OpStack.append(e)
-                elif e == ')' and OpStack[-1] != '(' and len(OpStack) > 0:
+                #elif e == ')' and OpStack[-1] != '(' and len(OpStack) > 0:
+                elif e == ')' and len(OpStack) > 0:
                     while OpStack[-1] != '(':
                         postfix.append(OpStack.pop())
                     OpStack.pop()
@@ -472,7 +529,7 @@ def InfixToPostfix(exp):
         return postfix
     else:
         # return 'La expresión regular no es válida, verifique que los paréntesis estén balanceados'
-        print('La expresión regular no es válida')
+        print('La expresión regular no es válida. Symbol check: ', symbol_check_2(exp), ' Parenthesis check: ', parenthesis_check(exp))
         return False
 
 
@@ -520,7 +577,7 @@ def InfixToPostfix(exp):
 #for e in exp: 
 #   print(e)
 #exp = list(exp)
-#syntactic_tree = buildTree(exp.pop(), exp)
+#syntactic_tree = buildTree(exp.pop(), exp)  
 
 
 
@@ -539,7 +596,7 @@ def InfixToPostfix(exp):
 #
 ##print('Expresión regular 2: ', InfixToPostfix(exp))
 #
-
+ 
 
 
 #   foul = [

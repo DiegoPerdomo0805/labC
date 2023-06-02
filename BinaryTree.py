@@ -1,5 +1,5 @@
 # implementar validación para el símbolo epsilon
-
+import graphviz
 
 class Node:
     def __init__(self, key, right=None, left=None, pos=None):
@@ -16,7 +16,7 @@ class Node:
     def determineNullable(self):
         if self.val == '*':
             self.nullable = True
-        elif self.val == '.':
+        elif self.val == "'.'":
             self.nullable = self.left.nullable and self.right.nullable
         elif self.val == '|':
             self.nullable = self.left.nullable or self.right.nullable
@@ -28,7 +28,7 @@ class Node:
     def determineFirstPos(self):
         if self.val == '*':
             self.first_pos = self.left.first_pos
-        elif self.val == '.':
+        elif self.val == "'.'":
             if self.left.nullable:
                 self.first_pos = self.left.first_pos + self.right.first_pos
             else:
@@ -43,7 +43,7 @@ class Node:
     def determineLastPos(self):
         if self.val == '*':
             self.last_pos = self.left.last_pos
-        elif self.val == '.':
+        elif self.val == "'.'":
             if self.right.nullable:
                 self.last_pos = self.left.last_pos + self.right.last_pos
             else:
@@ -60,7 +60,7 @@ class Node:
             self.left.determineFollowPos()
         if self.right:
             self.right.determineFollowPos()
-        if self.val == '.':
+        if self.val == "'.'":
             for i in self.left.last_pos:
                 self.searchPos(i).follow_pos += self.right.first_pos
         elif self.val == '*':
@@ -143,9 +143,41 @@ class Node:
             if self.right.searchPos(pos):
                 return self.right.searchPos(pos)
         return None
+    
+    def searchByVal(self, val):
+        if self.val == val:
+            return self.pos
+        if self.left:
+            if self.left.searchByVal(val):
+                return self.left.searchByVal(val)
+        if self.right:
+            if self.right.searchByVal(val):
+                return self.right.searchByVal(val)
+        return None
+    
+    def generate_graph(self):
+        dot = graphviz.Digraph()
+        
+        def traverse(node):
+            if node is None:
+                return
+            
+            dot.node(str(id(node)), label=f'Value: {node.val}\nPosition: {node.pos}\nFirstPos: {node.first_pos}\nLastPos: {node.last_pos}\nFollowPos: {node.follow_pos}')
+            
+            if node.left:
+                traverse(node.left)
+                dot.edge(str(id(node)), str(id(node.left)), label='Left')
+            
+            if node.right:
+                traverse(node.right)
+                dot.edge(str(id(node)), str(id(node.right)), label='Right')
+        
+        traverse(self)
+        
+        return dot
 
 
-operators = ['*', '|', '.']
+operators = ['*', '|', "'.'"]
 
 #Funcion para determinar si el arreglo a está dentro del arreglo b
 def ArrayInArray(a, b):
@@ -159,7 +191,7 @@ def buildTree(e, exp):
     if e == '*':
         #return Node(e, buildTree(exp[:-1]), None)
         return Node(e, None, buildTree(exp.pop(len(exp)-1), exp))
-    elif e == '.' or e == '|':
+    elif e == "'.'" or e == '|':
         #
         return Node(e, buildTree(exp.pop(len(exp)-1), exp), buildTree(exp.pop(len(exp)-1), exp))
     else:
