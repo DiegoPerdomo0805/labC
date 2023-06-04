@@ -440,7 +440,7 @@ def parser(regexStack, lets, sigma):
     for val in regexStack:
         #print("val: ", val)
         if val not in lets:
-            val = val.strip("'")
+            #val = val.strip("'")
             regex += val
             regex2.append(val)
         else:
@@ -497,3 +497,65 @@ def parser(regexStack, lets, sigma):
     print("Regex: ", regex)
     
     return regex2, sigma
+
+def updateSigma(regex, sigma):
+    logic_operators = ['|', '*', "'.'", '(', ')', '+', '?']
+    for e in regex:
+        if e not in sigma and e not in logic_operators:
+            sigma.append(e)
+    return sigma
+
+
+def PreprocessEntry(s, sigma):
+    valid = True
+    limit = len(s)
+    i = 0
+    while i < limit:
+        e = s[i]
+        if s[i] not in sigma:
+            temp = str(ord(s[i]))
+            if temp not in sigma:
+                temp = "'" + temp + "'"
+                if temp not in sigma:
+                    valid = False
+                    #sigma.append(temp)
+                else:
+                    #s[i] = temp
+                    s, i, limit = StitchTogether(s, temp, i, limit)
+            else:
+                #s[i] = temp
+                s, i, limit = StitchTogether(s, temp, i, limit)
+        else:
+            i += 1
+
+    return s, valid
+
+def StitchTogether(vest, patch, where, limit):
+    vest1 = vest[:where]
+    #print('vest1: ', vest1)
+    vest2 = vest[where+1:]
+    #print('vest2: ', vest2)
+    vest = vest1 + patch + vest2
+    where += len(patch) 
+    limit += len(patch) - 1
+    return vest, where, limit
+
+
+"""gary = '+'
+print('gary: ', gary)
+print('gary: ', str(ord(gary)))
+gary = "'" + str(ord(gary)) + "'"
+print('gary: ', gary)
+
+dummy = "Vex'ahlia Vessar"
+where = 10
+print('dummy: ', dummy)
+print('dummy: ', dummy[where:])
+for e in dummy:
+    print(' - ', e)
+married = 'de Rolo V'
+dummy, where = StitchTogether(dummy,married , where)
+print('dummy: ', dummy)
+print('dummy: ', dummy[where:])
+for e in dummy:
+    print(' - ', e)"""

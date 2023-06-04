@@ -1,0 +1,97 @@
+Expresion regular: (32|9|10)+|(0|1|2|3|4|5|6|7|8|9)+(.(0|1|2|3|4|5|6|7|8|9)+)?(E('+'|'45')?(0|1|2|3|4|5|6|7|8|9)+)?|'43'|'42'|'40'|'41'
+Cadena: 1.5
+Pos: 0
+Current state: q6
+Current char: 1
+Pos: 1
+Current state: q1
+Current char: .
+Pos: 2
+Current state: q7
+Current char: 5
+
+AFD directo minimizado: True
+Cadena: 18.9E10
+Pos: 0
+Current state: q6
+Current char: 1
+Pos: 1
+Current state: q1
+Current char: 8
+Pos: 2
+Current state: q1
+Current char: .
+Pos: 3
+Current state: q7
+Current char: 9
+Pos: 4
+Current state: q4
+Current char: E
+Pos: 5
+Current state: q8
+Current char: 1
+Pos: 6
+Current state: q5
+Current char: 0
+
+AFD directo minimizado: True
+Cadena: 4.9E-3
+Pos: 0
+Current state: q6
+Current char: 4
+Pos: 1
+Current state: q1
+Current char: .
+Pos: 2
+Current state: q7
+Current char: 9
+Pos: 3
+Current state: q4
+Current char: E
+Pos: 4
+Current state: q8
+Current char: -
+Pos: 5
+Current state: q9
+Current char: 3
+
+AFD directo minimizado: True
+Cadena: Hola
+Pos: 0
+Current state: q6
+Current char: H
+
+AFD directo minimizado: False
+Cadena: .089898+
+Pos: 0
+Current state: q6
+Current char: .
+
+AFD directo minimizado: False
+Cadena: 72.1E-19
+Pos: 0
+Current state: q6
+Current char: 7
+Pos: 1
+Current state: q1
+Current char: 2
+Pos: 2
+Current state: q1
+Current char: .
+Pos: 3
+Current state: q7
+Current char: 1
+Pos: 4
+Current state: q4
+Current char: E
+Pos: 5
+Current state: q8
+Current char: -
+Pos: 6
+Current state: q9
+Current char: 1
+Pos: 7
+Current state: q5
+Current char: 9
+
+AFD directo minimizado: True
