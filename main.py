@@ -113,6 +113,13 @@ def main(file, yalp):
 
     print('Tokens: ', tokens)
     print('Producciones: ', productions)
+    for e in productions:
+        i = 0
+        #for i in len(productions[e]):
+        while i < len(productions[e]):
+            productions[e][i] = replaceToken(productions[e][i], tokens)
+            i += 1
+
     print('-------------------------------------------------------------')
 
     ini = startingPoint(productions)
@@ -124,10 +131,35 @@ def main(file, yalp):
     print('Tokens: ', tokens)
     print('Producciones: ', productions)
     print('-------------------------------------------------------------')
-    print(' - ', ini)
-    print(' - ', productions)
+    print(' -/ ', ini)
+    print(' -/ ', productions)
+    print('-------------------------------------------------------------')
 
     starter = create_state(productions, ini)
+    starter.isInitial = True
+
+    estados = createAFD2(productions, starter)
+    for e in estados:
+        print(' - nombre:', e)
+        print(' - transiciones:', e.transitions)
+        print(' - contiene:', e.contains)
+        print(' - es aceptacion:', e.isAccept)
+        print(' - es inicial:', e.isInitial)
+        print(' - ' * 25)
+
+    createGraph(estados)
+
+
+    """print(' - ', starter)
+    print(' - ', starter.name)
+    print(' - ', starter.transitions)
+    print(' - ', starter.contains)
+    print(' - ', starter.isAccept)
+    print(' - ', starter.isInitial)
+    print(' - ' * 25)
+    transiciones = obtainTransitionS(starter)
+    print(transiciones)
+    print(' - ' * 25)
     print(' - ', starter)
     print(' - ', starter.name)
     print(' - ', starter.transitions)
@@ -135,6 +167,38 @@ def main(file, yalp):
     print(' - ', starter.isAccept)
     print(' - ', starter.isInitial)
     print(' - ' * 25)
+    print('-+-' * 25)
+    for e in transiciones:
+        new = GoTo(starter, e, productions)
+        print(' - ', new)
+        print(' - ', new.name)
+        print(' - ', new.transitions)
+        print(' - ', new.contains)
+        print(' - ', new.isAccept)
+        print(' - ', new.isInitial)
+        print(' - ' * 25)
+    print('-+-' * 25)
+    print(' - ', starter)
+    print(' - ', starter.name)
+    print(' - ', starter.transitions)
+    print(' - ', starter.contains)
+    print(' - ', starter.isAccept)
+    print(' - ', starter.isInitial)
+    print(' - ' * 25)"""
+
+    #states = createAFD(productions, starter)
+
+    """for e in states:
+        print(' - ', e.name)
+        print(' - ', e.transitions)
+        print(' - ', e.contains)
+        print(' - ', e.isAccept)
+        print(' - ', e.isInitial)
+        print(' - ' * 25)"""
+
+
+    
+    #states, acceptings = process_states_and_transitions(starter, tokens, productions)
 
     #aleluya = create_state(productions, ini)
     #print(' - ', aleluya)
