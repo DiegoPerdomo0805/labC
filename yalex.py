@@ -431,10 +431,10 @@ def translate(l, lets):
 
 # traducir el regex a partir de las reglas ya definidas
 def parser(regexStack, lets, sigma):
-    print('Stack String: ', ''.join(regexStack))
+    #print('Stack String: ', ''.join(regexStack))
     regex = ""
     regex2 = []
-    print('-'*100)
+    #print('-'*100)
 
     
     for val in regexStack:
@@ -450,9 +450,9 @@ def parser(regexStack, lets, sigma):
             regex2.append(lets[val])
     
     
-    print("regex: ", regex2)
-    
-    print('-'*100)
+    #print("regex: ", regex2)
+    #
+    #print('-'*100)
 
     # diferenciación entre tokens y operadores
     for i in range(len(regex2)):
@@ -474,7 +474,7 @@ def parser(regexStack, lets, sigma):
             else:    
                 sigma.append(e)
 
-    print("regexStack: ", regex2)
+    #print("regexStack: ", regex2)
 
     for e in regex2:
         if e in lets:
@@ -492,9 +492,9 @@ def parser(regexStack, lets, sigma):
 
 
         #print("val: ", val)
-    print('-'*100)
+    #print('-'*100)
 
-    print("Regex: ", regex)
+    #print("Regex: ", regex)
     
     return regex2, sigma
 

@@ -8,6 +8,7 @@ from AFN_to_AFD import *
 from AFN import *
 from direct_AFD import *
 from mini import *
+from lr import *
 
 files = [
     './tests/slr-1.yal',
@@ -16,50 +17,43 @@ files = [
     './tests/slr-4.yal'
 ]
 
+yalps = [
+    './tests/slr-1.yalp',
+    './tests/slr-2.yalp',
+    './tests/slr-3.yalp',
+    './tests/slr-4.yalp'
+]
+
+
 #file = files[1]
 
-def visual_automatas(NFA, DFA_from_NFA, AFD_directo, AFD_min, AFD_D_min, regex):
-    visual_AFN(NFA, ''.join(regex))
-    visual_AFD_from_AFN(DFA_from_NFA, ''.join(regex))
-    visual_directAFD(AFD_directo, ''.join(regex))
-    Minimizacion_Visual(AFD_min, 'AFN a AFD', ''.join(regex))
+def visual_automatas(AFD_D_min, regex):
     Minimizacion_Visual(AFD_D_min, 'AFD directo' , ''.join(regex))
 
 
-def automatas(tree, postfix, sigma, regex):
-    NFA = generateAFN(postfix)
-    #visual_AFN(NFA, ''.join(regex))
-    DFA_from_NFA = AFD_from_AFN(NFA, sigma)
-    #visual_AFD_from_AFN(DFA_from_NFA, ''.join(regex))
+def automatas(tree, postfix, sigma):
     AFD_directo = direct_build(tree, sigma, postfix)
-    #visual_directAFD(AFD_directo, ''.join(regex))
-    AFD_min = Minimization(DFA_from_NFA, sigma)
     #Minimizacion_Visual(AFD_min, 'AFN a AFD', ''.join(regex))
     AFD_D_min = Minimization(AFD_directo, sigma)
-    #Minimizacion_Visual(AFD_D_min, 'AFD directo' , ''.join(regex))
 
-    #visual_automatas(NFA, DFA_from_NFA, AFD_directo, AFD_min, AFD_D_min, regex)
-
-    return NFA, DFA_from_NFA, AFD_directo, AFD_min, AFD_D_min
+    return AFD_D_min
 
 def writeLog(bitacora, nombre):
     with open(nombre, 'w', encoding='utf-8') as f:
         f.write(bitacora)
 
-def main(file):
+def main(file, yalp):
     print('-------------------------------------------------------------')    
 
     l, r = grammar(file)
     sigma, regex = generate_alphabet(l, r)
 
-    print('Vex\'ahlia Vessar')
     print('-------------------------------------------------------------')
 
 
     for e in l:
         print(e, ' = ', l[e])
 
-    print('Cassandra de Rolo')
     print('-------------------------------------------------------------')
 
     for e in r:
@@ -69,26 +63,19 @@ def main(file):
     print('-------------------------------------------------------------')
 
 
-    print('Alfabeto: ', sigma)
-    print('Expresion regular: ', regex)
+    exp, sigma = parser(regex, l, sigma)
 
-    print('-------------------------------------------------------------')
-
-
-    r, sigma = parser(regex, l, sigma)
-
-    r_string = ''.join(r)
+    r_string = ''.join(exp)
 
     #print('Array regex: ', r)
     print('Expresion regular: ', r_string)
-    print('Keyleth')
-    print('--------------------------------------------------------.-----')
+    print('-------------------------------------------------------------')
 
     
 
-    tratemos = InfixToPostfix(r)
+    tratemos = InfixToPostfix(exp)
     postfix_copia = tratemos.copy()
-    updateSigma(r, sigma)
+    updateSigma(exp, sigma)
 
     print('Expresion regular postfija: ', ''.join(tratemos))
     print('Alfabeto: ', sigma)
@@ -101,17 +88,12 @@ def main(file):
     tratemos.append("'.'")
 
     tree = buildTree(tratemos.pop(), tratemos)
+    # #visual_tree = tree.generate_graph()
+    # tree.traversePostOrder()
+    # tree.determineFollowPos()
+    # AFD_D_min = automatas(tree, postfix_copia, sigma)
+    # #visual_automatas(AFD_D_min, regex)
 
-    #visual_tree = tree.generate_graph()
-    
-    tree.traversePostOrder()
-    
-    ########tree.post2()
-    
-    tree.determineFollowPos()
-    
-    ########tree.post3()
-    #print(r)
 
     """dummy = "     8.9E-12"
     print(dummy)
@@ -122,11 +104,70 @@ def main(file):
 
     valid = "La cadena es valida" if aver else "La cadena no es valida"
     print(valid)"""
+    print('-------------------------------------------------------------')
     
-    NFA, DFA_from_NFA, AFD_directo, AFD_min, AFD_D_min = automatas(tree, postfix_copia, sigma, regex)
+    
+    
+
+    tokens, productions = scan_tokens(yalp, r)
+
+    print('Tokens: ', tokens)
+    print('Producciones: ', productions)
+    print('-------------------------------------------------------------')
+
+    ini = startingPoint(productions)
+    prod = ini
+    ini += "'"
+    #productions[ini][0] = '.' + prod
+    productions[ini] = []
+    productions[ini].append('.' + prod)
+    print('Tokens: ', tokens)
+    print('Producciones: ', productions)
+    print('-------------------------------------------------------------')
+    print(' - ', ini)
+    print(' - ', productions)
+
+    starter = create_state(productions, ini)
+    print(' - ', starter)
+    print(' - ', starter.name)
+    print(' - ', starter.transitions)
+    print(' - ', starter.contains)
+    print(' - ', starter.isAccept)
+    print(' - ', starter.isInitial)
+    print(' - ' * 25)
+
+    #aleluya = create_state(productions, ini)
+    #print(' - ', aleluya)
+    #print(' - ', aleluya.name)
+    #print(' - ', aleluya.transitions)
+    #print(' - ', aleluya.contains)
+    #print(' - ', aleluya.isAccept)
+    #print(' - ', aleluya.isInitial)
+    #print(' - ' * 25)
+    #states = []
+    #generate_LR0_automaton(productions, aleluya, states)
+
+    """states = process_states_and_transitions(tokens, productions, ini)
+
+    for e in states:
+        print(' - ', e.name)
+        print(' - ', e.transitions)
+        print(' - ', e.contains)
+        print(' - ', e.isAccept)
+        print(' - ', e.isInitial)
+        print(' - ' * 25)"""
+
+    print('-------------------------------------------------------------')
+
+
+                
+
+    #dummy = generate_LR0_automaton(tokens, productions)
+
+
 
     #pruebas = []
-    bitacora = ""
+    """bitacora = ""
     bitacora += 'Expresion regular: ' + r_string + '\n'
     # leer archivo de pruebas tests.txt
     with open('./tests.txt', 'r', encoding='utf-8') as f:
@@ -139,7 +180,7 @@ def main(file):
             bitacora += 'AFD directo minimizado: ' + str(AFD_D_M_result) + '\n'
 
     writeLog(bitacora, 'bitacora.txt')
-    print(bitacora)
+    print(bitacora)"""
 
     print('-------------------------------------------------------------')
 
@@ -154,4 +195,5 @@ def main(file):
 #     # make the program wait for some seconds
 #     time.sleep(3)
 
-main(files[2])
+which = 2
+main(files[which], yalps[which])
